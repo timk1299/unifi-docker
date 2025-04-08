@@ -197,9 +197,9 @@ see [Certificate Support](#certificate-support). (formerly: `/var/cert/unifi`)
 * `/unifi/init.d`
 You can place scripts you want to launch every time the container starts in here
 
-* `/var/run/unifi` 
+* `/unifi/run` 
 Run information, in general you will not need to touch this volume.
-It is there to ensure UniFi has a place to write its PID files
+It is there to ensure UniFi has a place to write its PID files (formerly: `/var/run/unifi`)
 
 ### Legacy Volumes
 
