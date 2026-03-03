@@ -55,7 +55,7 @@ JVM_MAX_HEAP_SIZE=${JVM_MAX_HEAP_SIZE:-1024M}
 
 MONGOLOCK="${DATAPATH}/db/mongod.lock"
 JVM_EXTRA_OPTS="${JVM_EXTRA_OPTS} --add-opens=java.base/java.time=ALL-UNNAMED -Dunifi.datadir=${DATADIR} -Dunifi.logdir=${LOGDIR} -Dunifi.rundir=${RUNDIR}"
-PIDFILE=/var/run/unifi/unifi.pid
+PIDFILE=${RUNDIR}/unifi.pid
 
 if [ ! -z "${JVM_MAX_HEAP_SIZE}" ]; then
   JVM_EXTRA_OPTS="${JVM_EXTRA_OPTS} -Xmx${JVM_MAX_HEAP_SIZE}"
@@ -74,8 +74,8 @@ JVM_OPTS="${JVM_EXTRA_OPTS}
   -Djava.awt.headless=true
   -Dfile.encoding=UTF-8"
 
-# Cleaning /var/run/unifi/* See issue #26, Docker takes care of exlusivity in the container anyway.
-rm -f /var/run/unifi/unifi.pid
+# Cleaning PIDFILE See issue #26, Docker takes care of exlusivity in the container anyway.
+rm -f ${PIDFILE}
 
 run-parts /usr/local/unifi/init.d
 run-parts /usr/unifi/init.d
