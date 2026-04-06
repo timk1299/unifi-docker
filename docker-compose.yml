@@ -1,7 +1,6 @@
-version: '2.3'
 services:
   mongo:
-    image: mongo:3.6
+    image: mongo:4.4
     container_name: ${COMPOSE_PROJECT_NAME}_mongo
     networks:
       - unifi
@@ -10,7 +9,7 @@ services:
       - db:/data/db
       - dbcfg:/data/configdb
   controller:
-    image: "jacobalberty/unifi:${TAG:-latest}"
+    image: "timk1299/unifi:${TAG:-latest}"
     container_name: ${COMPOSE_PROJECT_NAME}_controller
     depends_on:
       - mongo
@@ -24,7 +23,7 @@ services:
       - log:/unifi/log
       - cert:/unifi/cert
       - init:/unifi/init.d
-      - run:/var/run/unifi
+      - run:/unifi/run
       # Mount local folder for backups and autobackups
       - ./backup:/unifi/data/backup
     user: unifi

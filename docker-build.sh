@@ -36,10 +36,12 @@ apt-get install -qy --no-install-recommends \
     dirmngr \
     gpg \
     gpg-agent \
-    openjdk-17-jre-headless \
+    openjdk-25-jre-headless \
     procps \
     libcap2-bin \
-    tzdata
+    tzdata \
+    binutils \
+    logrotate
 echo 'deb https://www.ui.com/downloads/unifi/debian stable ubiquiti' | tee /etc/apt/sources.list.d/100-ubnt-unifi.list
 tryfail apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 06E85760C0A52C50
 
@@ -48,7 +50,8 @@ if [ -d "/usr/local/docker/pre_build/$(dpkg --print-architecture)" ]; then
 fi
 
 curl -L -o ./unifi.deb "${1}"
-apt -qy install ./unifi.deb
+#apt -qy install ./unifi.deb
+dpkg -i --ignore-depends=mongodb-org-server ./unifi.deb
 rm -f ./unifi.deb
 chown -R unifi:unifi /usr/lib/unifi
 rm -rf /var/lib/apt/lists/*
