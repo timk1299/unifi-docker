@@ -50,7 +50,6 @@ if [ -d "/usr/local/docker/pre_build/$(dpkg --print-architecture)" ]; then
 fi
 
 curl -L -o ./unifi.deb "${1}"
-#apt -qy install ./unifi.deb
 dpkg -i --ignore-depends=mongodb-org-server ./unifi.deb
 rm -f ./unifi.deb
 chown -R unifi:unifi /usr/lib/unifi
