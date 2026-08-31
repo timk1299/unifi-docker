@@ -10,7 +10,7 @@ LABEL maintainer="Jacob Alberty <jacob.alberty@foundigital.com>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-ARG PKGURL=https://dl.ui.com/unifi/10.4.57/unifi_sysvinit_all.deb
+ARG PKGURL=https://dl.ui.com/unifi/10.6.101/unifi_sysvinit_all.deb
 
 ENV BASEDIR=/usr/lib/unifi \
     DATADIR=/unifi/data \
@@ -23,7 +23,7 @@ ENV BASEDIR=/usr/lib/unifi \
     CERTNAME=cert.pem \
     CERT_PRIVATE_NAME=privkey.pem \
     CERT_IS_CHAIN=false \
-    GOSU_VERSION=1.10 \
+    GOSU_VERSION=1.19 \
     BIND_PRIV=true \
     RUNAS_UID0=true \
     UNIFI_GID=999 \
