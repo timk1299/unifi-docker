@@ -59,7 +59,7 @@ RUN set -ex \
  && mkdir -p /usr/share/man/man1/ \
  && groupadd -r unifi -g $UNIFI_GID \
  && useradd --no-log-init -r -u $UNIFI_UID -g $UNIFI_GID unifi \
- && /usr/local/bin/docker-build.sh "${PKGURL}"
+ && bash /usr/local/bin/docker-build.sh "${PKGURL}"
 
 COPY --from=permset /out/permset /usr/local/bin/permset
 RUN chown 0.0 /usr/local/bin/permset && \
