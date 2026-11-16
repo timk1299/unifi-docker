@@ -5,12 +5,13 @@ log() {
 }
 
 set_java_home() {
-    JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:/jre/bin/java::")
-    if [ ! -d "${JAVA_HOME}" ]; then
-        # For some reason readlink failed so lets just make some assumptions instead
-        # We're assuming openjdk 8 since thats what we install in Dockerfile
-        arch=`dpkg --print-architecture 2>/dev/null`
-        JAVA_HOME=/usr/lib/jvm/java-17-openjdk-${arch}
+    # Resolve the real java binary (<java home>/bin/java) and go up two levels.
+    # Works for any Java version, with or without the pre-Java-9 jre/ layout.
+    local java_bin
+    java_bin=$(readlink -f "$(command -v java)")
+    JAVA_HOME=$(dirname "$(dirname "${java_bin}")")
+    if [ ! -x "${JAVA_HOME}/bin/java" ]; then
+        log "WARN: could not determine JAVA_HOME (java binary: ${java_bin:-not found})"
     fi
 }
 
