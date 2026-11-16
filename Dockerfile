@@ -4,13 +4,31 @@ RUN git clone https://github.com/jacobalberty/permset.git /src && \
     mkdir -p /out && \
     go build -ldflags "-X main.chownDir=/unifi" -o /out/permset
 
+# EXPERIMENTAL (11.x): the UniFi OS build no longer ships the WebRTC JNI library used
+# for remote access. Its native interface is unchanged, so take it from the last
+# standalone release (official Ubiquiti package, verified by sha256).
+FROM golang:tip-trixie AS webrtc
+ARG WEBRTC_PKGURL=https://dl.ui.com/unifi/10.6.109/unifi_sysvinit_all.deb
+ARG WEBRTC_PKGSHA256=bbbd514b786c27bfc13c2e075e0ecd3b279dab12aa80077b4b351c3501662bf2
+RUN curl -fsSL --retry 5 -o /tmp/unifi.deb "${WEBRTC_PKGURL}" && \
+    echo "${WEBRTC_PKGSHA256}  /tmp/unifi.deb" | sha256sum -c - && \
+    dpkg-deb -x /tmp/unifi.deb /tmp/unifi && \
+    mkdir -p /out && \
+    cd /tmp/unifi/usr/lib/unifi/lib/native && \
+    find . -name 'libubnt_webrtc_jni.so' -exec cp --parents {} /out/ \; && \
+    find /out -type f && \
+    rm -rf /tmp/unifi /tmp/unifi.deb
+
 FROM ubuntu:26.04
 
 LABEL maintainer="Jacob Alberty <jacob.alberty@foundigital.com>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-ARG PKGURL=https://dl.ui.com/unifi/10.6.109/unifi_sysvinit_all.deb
+# EXPERIMENTAL: 11.x is only published as a UniFi OS package (fw-update.ubnt.com, product
+# "unifi"). The package is Architecture: all and the amd64/arm64 uploads are identical
+# (same sha256), so this URL is used for every platform.
+ARG PKGURL=https://fw-download.ubnt.com/data/unifi/c11a-uos-deb13-amd64-11.0.99-37236-1-846bfcb2-6633-4f0c-8a93-4bff501748b2.deb
 
 ENV BASEDIR=/usr/lib/unifi \
     DATADIR=/unifi/data \
@@ -45,6 +63,7 @@ RUN mkdir -p /usr/unifi \
 COPY docker-entrypoint.sh /usr/local/bin/
 COPY docker-healthcheck.sh /usr/local/bin/
 COPY docker-build.sh /usr/local/bin/
+COPY uos-repack.sh uos-webui-patch.sh /usr/local/bin/
 COPY functions /usr/unifi/functions
 COPY import_cert /usr/unifi/init.d/
 COPY pre_build /usr/local/docker/pre_build
@@ -60,6 +79,14 @@ RUN set -ex \
  && groupadd -r unifi -g $UNIFI_GID \
  && useradd --no-log-init -r -u $UNIFI_UID -g $UNIFI_GID unifi \
  && bash /usr/local/bin/docker-build.sh "${PKGURL}"
+
+COPY --from=webrtc --chown=unifi:unifi /out/ /usr/local/unifi/webrtc-native/
+RUN set -e; \
+    for so in $(cd /usr/local/unifi/webrtc-native && find . -type f); do \
+        [ -e "${BASEDIR}/lib/native/${so}" ] || install -D -o unifi -g unifi -m 0644 \
+            "/usr/local/unifi/webrtc-native/${so}" "${BASEDIR}/lib/native/${so}"; \
+    done; \
+    rm -rf /usr/local/unifi/webrtc-native
 
 COPY --from=permset /out/permset /usr/local/bin/permset
 RUN chown 0.0 /usr/local/bin/permset && \

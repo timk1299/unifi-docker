@@ -41,7 +41,9 @@ apt-get install -qy --no-install-recommends \
     libcap2-bin \
     tzdata \
     binutils \
-    logrotate
+    logrotate \
+    zip \
+    unzip
 echo 'deb https://www.ui.com/downloads/unifi/debian stable ubiquiti' | tee /etc/apt/sources.list.d/100-ubnt-unifi.list
 tryfail curl -o /etc/apt/trusted.gpg.d/unifi-repo.gpg https://dl.ui.com/unifi/unifi-repo.gpg
 if [ -d "/usr/local/docker/pre_build/$(dpkg --print-architecture)" ]; then
@@ -49,8 +51,20 @@ if [ -d "/usr/local/docker/pre_build/$(dpkg --print-architecture)" ]; then
 fi
 
 curl -L -o ./unifi.deb "${1}"
-dpkg -i --ignore-depends=mongodb-org-server ./unifi.deb
+# unifi-core and unifi-matter-controller are UniFi OS components required by the
+# 11.x UniFi OS package; they are not needed (or available) for standalone use.
+dpkg -i --ignore-depends=mongodb-org-server,unifi-core,unifi-matter-controller ./unifi.deb
 rm -f ./unifi.deb
+
+# EXPERIMENTAL: convert a UniFi OS build back into a standalone launchable layout
+# (zip/unzip were installed above; removed with dpkg since apt refuses while unifi has ignored deps)
+bash /usr/local/bin/uos-repack.sh "${BASEDIR}/lib"
+dpkg --purge zip unzip
+rm -f /usr/local/bin/uos-repack.sh
+# hide the "Upgrade to UniFi OS Server" modal shown after every login
+bash /usr/local/bin/uos-webui-patch.sh "${BASEDIR}/webapps/ROOT"
+rm -f /usr/local/bin/uos-webui-patch.sh
+
 chown -R unifi:unifi /usr/lib/unifi
 rm -rf /var/lib/apt/lists/*
 

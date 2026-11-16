@@ -154,6 +154,30 @@ For Unifi-in-Docker, this uses the most recent stable version.
 | [`stable-6`](https://github.com/jacobalberty/unifi-docker/blob/stable-6/Dockerfile)         | Final stable version 6 (6.5.55)                   | [Change Log 6.5.55](https://community.ui.com/releases/UniFi-Network-Application-6-5-55/48c64137-4a4a-41f7-b7e4-3bee505ae16e)     |
 | [`stable-5`](https://github.com/jacobalberty/unifi-docker/blob/stable-5/Dockerfile)         | Final stable version 5 (5.4.23)                   | [Change Log 5.14.23](https://community.ui.com/releases/UniFi-Network-Controller-5-14-23/daf90732-30ad-48ee-81e7-1dcb374eba2a)    |
 
+### Experimental: UniFi Network 11 (standalone)
+
+Starting with Network 11, Ubiquiti no longer publishes a standalone package; 11.x is
+only shipped for UniFi OS. The `unifi-11-experimental` branch builds 11.0.99 from the
+UniFi OS package and converts it back into a standalone application at build time:
+
+- `uos-repack.sh` repacks the UniFi OS `ace.jar` into the classic standalone layout
+  (the standalone launcher `com.ubnt.ace.Launcher` is still included) and adds six
+  libraries the UniFi OS build no longer bundles (fetched from Maven Central, sha256-pinned).
+- The WebRTC native library (used for remote access) is taken from the official
+  10.6.109 package, since its native interface is unchanged.
+- `uos-webui-patch.sh` hides the "Upgrade to UniFi OS Server" dialog shown after every login.
+
+Usage is unchanged (same volumes, environment variables, external MongoDB).
+
+**Caveats**
+- Not supported by Ubiquiti. Every new 11.x release must be re-tested; Ubiquiti has
+  announced that the standalone server will not support upcoming Network versions.
+- **Back up before upgrading.** The database is migrated on first start and 10.6.x
+  refuses to start on it afterwards ("We do not support upgrading from 11.0.99").
+- The application tries to reach UniFi OS services that do not exist standalone
+  (Alarm Manager on `127.0.0.1:11010`); this only produces log errors.
+- Remote access via unifi.ui.com and arm64 at runtime are untested.
+
 ### multiarch
 
 All available containers now support multiarch with `amd64`, `armhf`, and `arm64` builds included.
