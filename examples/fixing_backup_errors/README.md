@@ -49,8 +49,8 @@ services:
       - db:/data/db
       - dbcfg:/data/configdb
   controller:
-    # image: "jacobalberty/unifi:${TAG:-latest}"
-    image: jacobalberty/unifi:latest
+    # image: "timk1299/unifi:${TAG:-latest}"
+    image: timk1299/unifi:latest
     # container_name: ${COMPOSE_PROJECT_NAME}_controller
     container_name: unifi_controller
     depends_on:
