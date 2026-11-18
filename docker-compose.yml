@@ -1,7 +1,11 @@
+# Project name decides container, volume and network names (unifi_db, unifi_data, ...).
+# Override it with COMPOSE_PROJECT_NAME in a local .env file (see .env.example).
+name: ${COMPOSE_PROJECT_NAME:-unifi}
+
 services:
   mongo:
     image: mongo:4.4
-    container_name: ${COMPOSE_PROJECT_NAME}_mongo
+    container_name: ${COMPOSE_PROJECT_NAME:-unifi}_mongo
     networks:
       - unifi
     restart: always
@@ -10,7 +14,7 @@ services:
       - dbcfg:/data/configdb
   controller:
     image: "timk1299/unifi:${TAG:-latest}"
-    container_name: ${COMPOSE_PROJECT_NAME}_controller
+    container_name: ${COMPOSE_PROJECT_NAME:-unifi}_controller
     depends_on:
       - mongo
     init: true
@@ -43,7 +47,7 @@ services:
       - "10001:10001/udp" # AP discovery
   logs:
     image: bash
-    container_name: ${COMPOSE_PROJECT_NAME}_logs
+    container_name: ${COMPOSE_PROJECT_NAME:-unifi}_logs
     depends_on:
       - controller
     command: bash -c 'tail -F /unifi/log/*.log'

@@ -2,3 +2,6 @@
 .vscode/
 .DS_Store
 backup/
+
+# Local compose overrides (see .env.example)
+.env
