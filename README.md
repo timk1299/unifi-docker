@@ -157,7 +157,7 @@ For Unifi-in-Docker, this uses the most recent stable version.
 ### Experimental: UniFi Network 11 (standalone)
 
 Starting with Network 11, Ubiquiti no longer publishes a standalone package; 11.x is
-only shipped for UniFi OS. The `unifi-11-experimental` branch builds 11.0.99 from the
+only shipped for UniFi OS. The `unifi-11-experimental` branch builds 11.0.104 from the
 UniFi OS package and converts it back into a standalone application at build time:
 
 - `uos-repack.sh` repacks the UniFi OS `ace.jar` into the classic standalone layout

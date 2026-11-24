@@ -28,7 +28,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 # EXPERIMENTAL: 11.x is only published as a UniFi OS package (fw-update.ubnt.com, product
 # "unifi"). The package is Architecture: all and the amd64/arm64 uploads are identical
 # (same sha256), so this URL is used for every platform.
-ARG PKGURL=https://fw-download.ubnt.com/data/unifi/c11a-uos-deb13-amd64-11.0.99-37236-1-846bfcb2-6633-4f0c-8a93-4bff501748b2.deb
+ARG PKGURL=https://fw-download.ubnt.com/data/unifi/6a2b-uos-deb13-amd64-11.0.104-37279-1-8369db7e-bc57-520b-b8be-fbdf9b734bda.deb
 
 ENV BASEDIR=/usr/lib/unifi \
     DATADIR=/unifi/data \
